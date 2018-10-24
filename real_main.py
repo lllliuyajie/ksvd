@@ -6,33 +6,49 @@ from sklearn.model_selection import train_test_split
 
 # cancer数据最后一列是标签
 def extract_data():
-    data_list = ['cancer', 'Glass', 'WBC']
+    data_list = ['cancer', 'Glass', 'wdbc']
     len_dataset = len(data_list)
+    p_list = []
+    n_list = []
 
     #  读取其中一个数据集
-    one_dataset = sio.loadmat('data/'+data_list[0]+'.mat')   # 字典形式
+    one_dataset = sio.loadmat('data/'+data_list[2]+'.mat')   # 字典形式
     data = one_dataset['A']
     lables = one_dataset['d']
 
     # 将字典转成 array
     data_array = np.array(data)
     lables_array = np.array(lables)
+    all_data = np.concatenate((data_array, lables_array), axis=1)
+    print('数据集维度: '+str(all_data.shape))
+    for row in all_data:
+        # 取出成列表形式
+        if row[-1] == 1:
+            p_list.append(row)
+        elif row[-1] == -1:
+            n_list.append(row)
+        else:
+            continue
 
     # 计算正类和负类分别占多少     Ture 可以当作1 false当作1
-
-    len_p_lables = np.sum(lables == 1)
-    len_n_lables = np.sum(lables == -1)
+    p_arr = np.array(p_list)
+    print('正类样例维度 ：'+str(p_arr.shape))
+    n_arr = np.array(n_list)
+    print('负类样例维度： '+str(n_arr.shape))
+    len_p_lables = np.sum(lables_array == 1)
+    print('正类样例的个数： '+str(len_p_lables))
+    len_n_lables = np.sum(lables_array == -1)
+    print('负类样例的个数： ' + str(len_n_lables))
 
     # 正类样本和负类样本
+    p_data = p_arr[:, :-1]
+    p_lable = p_arr[:, -1]
 
-    p_data = data_array[:len_p_lables, :]
-    p_lable = lables_array[:len_p_lables, :]
-
-    n_data = data_array[len_n_lables:, :]
-    n_lable = lables_array[len_n_lables:, :]
+    n_data = n_arr[:, :-1]
+    n_lable = n_arr[:, -1]
 
     # 数据预处理  标准化 归一化
-    p_scale_data = skp.scale(p_data)
+    '''p_scale_data = skp.scale(p_data)
     p_all_data = np.concatenate((p_scale_data, p_lable), axis=1) # 0按列，1按行
 
     n_scale_data = skp.scale(n_data)
@@ -54,7 +70,7 @@ def extract_data():
     # len_abnormal_data = int(round (len_n_lables * 0.05))
     # print(len_abnormal_data)
 
-    return all_train, all_test
+    return all_train, all_test'''
 
 if __name__ == '__main__':
     extract_data()

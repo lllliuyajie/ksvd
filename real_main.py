@@ -2,7 +2,7 @@ import scipy.io as sio
 import numpy as np
 import sklearn.preprocessing as skp
 from sklearn.model_selection import train_test_split
-
+import OMP
 
 # cancer数据最后一列是标签
 def extract_data():
@@ -12,7 +12,7 @@ def extract_data():
     n_list = []
 
     #  读取其中一个数据集
-    one_dataset = sio.loadmat('data/'+data_list[2]+'.mat')   # 字典形式
+    one_dataset = sio.loadmat('data/'+data_list[0]+'.mat')   # 字典形式
     data = one_dataset['A']
     lables = one_dataset['d']
 
@@ -42,14 +42,14 @@ def extract_data():
 
     # 正类样本和负类样本
     p_data = p_arr[:, :-1]
-    p_lable = p_arr[:, -1]
+    p_lable = np.array(p_arr[:, -1]).reshape((len_p_lables, 1))
 
     n_data = n_arr[:, :-1]
-    n_lable = n_arr[:, -1]
+    n_lable = np.array(n_arr[:, -1]).reshape((len_n_lables, 1))
 
     # 数据预处理  标准化 归一化
-    '''p_scale_data = skp.scale(p_data)
-    p_all_data = np.concatenate((p_scale_data, p_lable), axis=1) # 0按列，1按行
+    p_scale_data = skp.scale(p_data)
+    p_all_data = np.concatenate((p_scale_data, p_lable), axis=1)  # 0按列，1按行
 
     n_scale_data = skp.scale(n_data)
     n_all_data = np.concatenate((n_scale_data, n_lable), axis=1)
@@ -61,16 +61,18 @@ def extract_data():
 
     nall_train = np.concatenate((p_data_train, n_data_train), axis=0)
     all_train = np.random.permutation(nall_train)   # 组合训练集，并且打乱
-
+    print(all_train.shape)
     nall_test = np.concatenate((p_data_test, n_data_test), axis=0)
-    all_test = np.random.permutation(nall_test)
+    all_test = np.random.permutation(nall_test)     # 组合测试集并且打乱
 
     # len_data_tr = int(round(len_p_lables * 0.7))
     # print(len_data_tr)
     # len_abnormal_data = int(round (len_n_lables * 0.05))
     # print(len_abnormal_data)
 
-    return all_train, all_test'''
+    return all_train, all_test
+
 
 if __name__ == '__main__':
-    extract_data()
+    train_set, test_set = extract_data()
+    OMP.omp()
